@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حاسبة الأقساط - مايلو</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+      direction: rtl;
+      color: #333;
+      position: relative;
+    }
+    .background-text {
+      position: absolute;
+      top: 10px;
+      right: 50%;
+      transform: translateX(50%);
+      font-size: 90px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ff6b6b, #f7d794, #1dd1a1, #54a0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    h2 {
+      color: #0066cc;
+      text-align: center;
+      margin-top: 60px;
+      position: relative;
+      z-index: 1;
+    }
+    input, select, button {
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+    }
+    button {
+      background-color: #0066cc;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      background: #e0ffe0;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #b2d8b2;
+      position: relative;
+      z-index: 1;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 20px;
+      color: #777;
+      font-style: italic;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 20px;
+      }
+      input, select, button {
+        font-size: 16px;
+        padding: 10px;
+      }
+      .background-text {
+        font-size: 60px;
+        top: 30px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .background-text {
+        display: none;
+      }
+      h2 {
+        margin-top: 20px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        max-width: 600px;
+        margin: auto;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-text">هندي</div>
+  <h2>حاسبة الأقساط - مايلو</h2>
+
+  <input type="number" id="price" placeholder="سعر المنتج (جنيه)">
+  <input type="number" id="downPayment" placeholder="المقدم (اختياري)">
+  
+  <select id="months">
+    <option disabled selected>عدد الشهور</option>
+    <option value="2">2 شهر</option>
+    <option value="3">3 شهور</option>
+    <option value="6">6 شهور</option>
+    <option value="9">9 شهور</option>
+    <option value="12">12 شهر</option>
+    <option value="15">15 شهر</option>
+    <option value="18">18 شهر</option>
+    <option value="24">24 شهر</option>
+    <option value="36">36 شهر</option>
+    <option value="48">48 شهر</option>
+  </select>
+
+  <button onclick="calculate()">احسب القسط</button>
+
+  <div id="result"></div>
+
+  <div class="footer">مع تحيات هندي ❤️</div>
+
+  <script>
+    const rates = {
+      2:  { interest: 30.0, fees: 1.5 },
+      3:  { interest: 32.0, fees: 1.5 },
+      6:  { interest: 30.4, fees: 1.5 },
+      9:  { interest: 38.0, fees: 0.0 },
+      12: { interest: 30.4, fees: 2.5 },
+      15: { interest: 30.0, fees: 2.5 },
+      18: { interest: 43.0, fees: 0.0 },
+      24: { interest: 33.0, fees: 2.5 },
+      36: { interest: 33.6, fees: 2.5 },
+      48: { interest: 50.0, fees: 5.0 }
+    };
+
+    function calculate() {
+      const price = parseFloat(document.getElementById('price').value);
+      const down = parseFloat(document.getElementById('downPayment').value) || 0;
+      const months = parseInt(document.getElementById('months').value);
+      if (isNaN(price) || price <= 0 || isNaN(months)) {
+        document.getElementById('result').innerText = "من فضلك أدخل القيم بشكل صحيح.";
+        return;
+      }
+      const rate = rates[months];
+      const remaining = price - down;
+      const totalInterestPercent = (rate.interest * (months / 12)).toFixed(2);
+      const interestAmount = remaining * (rate.interest / 100) * (months / 12);
+      const feesAmount = price * (rate.fees / 100);
+      const total = remaining + interestAmount + feesAmount;
+      const monthly = total / months;
+      document.getElementById('result').innerHTML = `
+        💰 القسط الشهري: <strong>${monthly.toFixed(2)} جنيه</strong><br>
+        📊 إجمالي الفوائد: ${interestAmount.toFixed(2)} جنيه 
+        <span style="color:#666;">(${totalInterestPercent}%)</span><br>
+        🧾 الرسوم الإدارية: ${feesAmount.toFixed(2)} جنيه<br>
+        ✅ الإجمالي الكلي: ${total.toFixed(2)} جنيه
+      `;
+    }
+  </script>
+</body>
+</html>
